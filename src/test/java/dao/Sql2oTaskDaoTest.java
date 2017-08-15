@@ -1,18 +1,19 @@
 package dao;
 
 import models.Task;
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 
-import static org.junit.Assert.*;
-
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 public class Sql2oTaskDaoTest {
 
-    private Sql2oTaskDao taskDao; //ignore me for now. We'll create this soon.
+    private Sql2oTaskDao taskDao; //ignore me for now
     private Connection conn; //must be sql2o class conn
 
     @Before
@@ -29,59 +30,76 @@ public class Sql2oTaskDaoTest {
     public void tearDown() throws Exception {
         conn.close();
     }
+
     @Test
     public void addingCourseSetsId() throws Exception {
-        Task task = new Task ("mow the lawn");
+        Task task = setupNewTask();
         int originalTaskId = task.getId();
         taskDao.add(task);
         assertNotEquals(originalTaskId, task.getId()); //how does this work?
     }
+
     @Test
     public void existingTasksCanBeFoundById() throws Exception {
-        Task task = new Task ("mow the lawn");
+        Task task = setupNewTask();
         taskDao.add(task); //add to dao (takes care of saving)
         Task foundTask = taskDao.findById(task.getId()); //retrieve
         assertEquals(task, foundTask); //should be the same
     }
 
     @Test
-    public void allTasksAreFound_true() throws Exception {
-        Task task = new Task("mow the lawn");
+    public void addedTasksAreReturnedFromgetAll() throws Exception {
+        Task task = setupNewTask();
         taskDao.add(task);
-        assertEquals(1,taskDao.getAll().size());
+        assertEquals(1, taskDao.getAll().size());
     }
+
     @Test
     public void noTasksReturnsEmptyList() throws Exception {
         assertEquals(0, taskDao.getAll().size());
     }
-
     @Test
     public void updateChangesTaskContent() throws Exception {
         String initialDescription = "mow the lawn";
-        Task task = new Task (initialDescription);
+        Task task = new Task (initialDescription, 1);
         taskDao.add(task);
 
-        taskDao.update(task.getId(),"brush the cat");
+        taskDao.update(task.getId(),"brush the cat",1);
         Task updatedTask = taskDao.findById(task.getId()); //why do I need to refind this?
         assertNotEquals(initialDescription, updatedTask.getDescription());
     }
 
     @Test
     public void deleteByIdDeletesCorrectTask() throws Exception {
-        Task task = new Task ("mow the lawn");
+        Task task = setupNewTask();
         taskDao.add(task);
         taskDao.deleteById(task.getId());
         assertEquals(0, taskDao.getAll().size());
     }
+
     @Test
     public void clearAllClearsAll() throws Exception {
-        Task task = new Task ("mow the lawn");
-        Task otherTask = new Task("brush the cat");
+        Task task = setupNewTask();
+        Task otherTask = new Task("brush the cat",1);
         taskDao.add(task);
         taskDao.add(otherTask);
         int daoSize = taskDao.getAll().size();
         taskDao.clearAllTasks();
         assertTrue(daoSize > 0 && daoSize > taskDao.getAll().size()); //this is a little overcomplicated, but illustrates well how we might use `assertTrue` in a different way.
     }
+
+    @Test
+    public void categoryIdIsReturnedCorrectly() throws Exception {
+        Task task = setupNewTask();
+        int originalCatId = task.getCategoryId();
+        taskDao.add(task);
+        assertEquals(originalCatId, taskDao.findById(task.getId()).getCategoryId());
+    }
+
+
+    public Task setupNewTask(){
+        return new Task("mow the lawn",1);
+    }
+
 }
 

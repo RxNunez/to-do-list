@@ -18,14 +18,14 @@ public class Sql2oCategoryDao implements CategoryDao { //implementing our interf
     }
 
     @Override
-    public void add(Category task) {
-        String sql = "INSERT INTO tasks (description) VALUES (:description)"; //raw sql
+    public void add(Category category) {
+        String sql = "INSERT INTO categories (name) VALUES (:name)"; //raw sql
         try(Connection con = sql2o.open()){ //try to open a connection
             int id = (int) con.createQuery(sql) //make a new variable
-                    .bind(task) //map my argument onto the query so we can use information from it
+                    .bind(category) //map my argument onto the query so we can use information from it
                     .executeUpdate() //run it all
                     .getKey(); //int id is now the row number (row “key”) of db
-            task.setId(id); //update object to set id now from database
+            category.setId(id); //update object to set id now from database
         } catch (Sql2oException ex) {
             System.out.println(ex); //oops we have an error!
         }
@@ -34,29 +34,22 @@ public class Sql2oCategoryDao implements CategoryDao { //implementing our interf
     @Override
     public List<Category> getAll() {
         try(Connection con = sql2o.open()){
-            return con.createQuery("SELECT * FROM category") //raw sql
+            return con.createQuery("SELECT * FROM categories") //raw sql
                     .executeAndFetch(Category.class); //fetch a list
         }
     }
-    @Override
-    public List<Task> getAllTasksByCategory(int categoryId) {
-        try(Connection con = sql2o.open()){
-            return con.createQuery("SELECT * FROM category") //raw sql
-                    .executeAndFetch(Task.class); //fetch a list
-        }
-    }
-            ;
+                ;
     @Override
     public Category findById(int id) {
         try(Connection con = sql2o.open()){
-            return con.createQuery("SELECT * FROM category WHERE id = :id")
+            return con.createQuery("SELECT * FROM categories WHERE id = :id")
                     .addParameter("id", id) //key/value pair, key must match above
                     .executeAndFetchFirst(Category.class); //fetch an individual item
         }
     }
     @Override
     public void update(int id, String newName){
-        String sql = "UPDATE category SET name = :name WHERE id=:id";
+        String sql = "UPDATE categories SET name = :name WHERE id=:id";
         try(Connection con = sql2o.open()){
             con.createQuery(sql)
                     .addParameter("name", newName)
@@ -69,7 +62,7 @@ public class Sql2oCategoryDao implements CategoryDao { //implementing our interf
 
     @Override
     public void deleteById(int id) {
-        String sql = "DELETE from category WHERE id=:id";
+        String sql = "DELETE from categories WHERE id=:id";
         try (Connection con = sql2o.open()) {
             con.createQuery(sql)
                     .addParameter("id", id)
@@ -80,12 +73,21 @@ public class Sql2oCategoryDao implements CategoryDao { //implementing our interf
     }
     @Override
     public void clearAllCategories() {
-        String sql = "DELETE from category";
+        String sql = "DELETE from categories";
         try (Connection con = sql2o.open()) {
             con.createQuery(sql)
                     .executeUpdate();
         } catch (Sql2oException ex){
             System.out.println(ex);
+        }
+
+    }
+    @Override
+    public List<Task> getAllTasksByCategory(int categoryId) {
+        try (Connection con = sql2o.open()) {
+            return con.createQuery("SELECT * FROM tasks WHERE categoryId = :categoryId")
+                    .addParameter("categoryId", categoryId)//raw sql
+                    .executeAndFetch(Task.class); //fetch a list
         }
     }
 }
