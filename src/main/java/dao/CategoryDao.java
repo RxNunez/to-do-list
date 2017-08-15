@@ -22,7 +22,8 @@ public interface CategoryDao {
     void update(int id, String name);
 
     //delete
-    void deleteById(int id);
+//    void deleteById(int id);
+    void deleteCategoryById(int categoryId);
     void clearAllCategories();
 
 }

@@ -61,11 +61,11 @@ public class Sql2oCategoryDao implements CategoryDao { //implementing our interf
     }
 
     @Override
-    public void deleteById(int id) {
+    public void deleteCategoryById(int categoryId) {
         String sql = "DELETE from categories WHERE id=:id";
         try (Connection con = sql2o.open()) {
             con.createQuery(sql)
-                    .addParameter("id", id)
+                    .addParameter("id", categoryId)
                     .executeUpdate();
         } catch (Sql2oException ex){
             System.out.println(ex);
