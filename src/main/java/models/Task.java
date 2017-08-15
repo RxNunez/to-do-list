@@ -29,49 +29,60 @@ public class Task {
         if (id != task.id) return false;
         if (categoryId != task.categoryId) return false;
         if (!description.equals(task.description)) return false;
-        return createdAt != null ? createdAt.equals(task.createdAt) : task.createdAt == null;
+        return description.equals(task.description);
+//        return createdAt != null ? createdAt.equals(task.createdAt) : task.createdAt == null;
     }
 
     @Override
     public int hashCode() {
         int result = description.hashCode();
         result = 31 * result + (completed ? 1 : 0);
-        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+//        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
         result = 31 * result + id;
         result = 31 * result + categoryId;
         return result;
     }
 
     public int getCategoryId() {
-        return categoryId;
+        return this.categoryId;
     }
 
     public void setCategoryId(int categoryId) {
         this.categoryId = categoryId;
     }
 
+    public String getDescription() {
+        return this.description;
+    }
+
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public int getId() {
+        return this.id;
     }
 
     public void setId(int id) {
         this.id = id;
     }
 
-    public String getDescription() {
-        return description;
+    public boolean isCompleted() {
+        return completed;
     }
+
     public boolean getCompleted(){
         return this.completed;
+
+    }public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 
     public LocalDateTime getCreatedAt() {
-        return createdAt;
+        return this.createdAt;
     }
 
-    public int getId() {
-        return id;
-    }
+
 
 
 
